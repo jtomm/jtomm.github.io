@@ -568,7 +568,7 @@ data: {
         this.addPlaces = async function(map, locationdata) {
 
             let svgMarkup = `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 34.58 36.33" width="30" height="30"><defs><style>.cls-1{fill:url(#radial-gradient);}.cls-2{fill:#3db983;}.cls-3{fill:#fff;}.cls-4{fill:none;stroke:#2b9166;stroke-miterlimit:10;}</style><radialGradient id="radial-gradient" cx="0.07" cy="31.51" r="8.34" gradientTransform="translate(17.18 20.69) scale(1.54 0.39)" gradientUnits="userSpaceOnUse"><stop offset="0"/><stop offset="1" stop-opacity="0"/></radialGradient></defs><title>music-shadow</title><g id="Layer_2" data-name="Layer 2"><g id="Layer_1-2" data-name="Layer 1"><ellipse class="cls-1" cx="17.29" cy="33.06" rx="12.83" ry="3.27"/><circle class="cls-2" cx="17.29" cy="17.29" r="16.79"/><path class="cls-3" d="M24.76,9.37V21.93a1.47,1.47,0,0,1-.38,1,2.53,2.53,0,0,1-1,.68,6.31,6.31,0,0,1-1.16.36,5,5,0,0,1-2.16,0,6.3,6.3,0,0,1-1.16-.36,2.53,2.53,0,0,1-1-.68,1.5,1.5,0,0,1,0-2,2.54,2.54,0,0,1,1-.68,6.38,6.38,0,0,1,1.16-.36,5.39,5.39,0,0,1,1.08-.12,5.2,5.2,0,0,1,2.15.44v-6l-8.61,2.66V24.8a1.48,1.48,0,0,1-.38,1,2.54,2.54,0,0,1-1,.68,6.38,6.38,0,0,1-1.16.36,5.05,5.05,0,0,1-2.16,0,6.37,6.37,0,0,1-1.16-.36,2.54,2.54,0,0,1-1-.68,1.5,1.5,0,0,1,0-2,2.54,2.54,0,0,1,1-.68A6.37,6.37,0,0,1,10,22.76a5.46,5.46,0,0,1,1.08-.12,5.21,5.21,0,0,1,2.15.44V12.24a1,1,0,0,1,.21-.63,1.1,1.1,0,0,1,.55-.4l9.33-2.87a1,1,0,0,1,.31,0,1.07,1.07,0,0,1,1.08,1.08Z"/><circle class="cls-4" cx="17.29" cy="17.29" r="16.79"/></g></g></svg>`;
-            let icon = new H.map.Icon(svgMarkup)
+            let icon = new H.map.Icon(svgMarkup);
 
             const parser = new myApp.widgets.csvParser();
             let data = await parser.parseCSV(locationdata);
@@ -608,7 +608,7 @@ data: {
             for (let key of people.people.keys()) { // currently counts multiple visits from the same person again
                 let person = people.people.get(key);
                 for (var place of person.places)
-                    this.places.get(place).totalCustomers += 1; // all locations a person has gone gets added to total count
+                    this.places.get(place).totalCustomers += 1; // all locations a person has gone to gets added to total count
                 this.places.get(place).currentCustomers += 1; // last location gets added to current count
             }
         };
@@ -623,21 +623,19 @@ data: {
 
             for (let i = 1, j = data[0].length; i < j; ++i) { // skip header row
 
-                let place = data[4][i].replace(/"/g, '');
+                let place = data[4][i].replace(/"/g, ''); // replace is to fix weird format coming out of parser, probably should fix it on parser/data side...
                 let type = data[5][i].replace(/"/g, '');
                 let lat = Number(data[6][i].replace(/"/g, ''));
                 let lng = Number(data[7][i].replace(/"/g, ''));
                 let id = data[0][i];
 
-                if (type === 'Like')  // count it here, I guess
+                if (type === 'Like')  // add likes here? unimplemented, currently included with places info
                     continue;
 
                 if (this.people.has(id)) { // existing entry found, add new place/coords to it
                     let person = this.people.get(id);
-                    if (place === person.places[person.places.length-1]) {// Unless it's the same place again...
-                        console.log(id, place, person.places[person.places.length-1]);
+                    if (place === person.places[person.places.length-1]) // Unless it's the same place again...
                         continue;
-                    }
                     person.places.push(place);
                     person.lats.push(lat);
                     person.lngs.push(lng);
@@ -665,38 +663,7 @@ data: {
                 map.map.addObject(marker);
             }
         };
-        this.countTrajectories = async function() {
-            // Returns all trajectories, sorted by times taken.
-
-            let trajectories = {};
-            for (let key of this.people.keys()) {
-                let person = this.people.get(key);
-                let origin = null;
-                let destination = null;
-
-                // fetch the trajectories of each person. First location registered has no origin, so it's not included
-                // because it can't be drawn on the map. Collect in a container with key [origin, destination].
-                for (let place of person.places) {
-                    origin = destination;
-                    destination = place;
-                    if (origin !== null) {
-                        let trajectory = [origin, destination]; // ugly, use IDs here or something for performance etc. reasons
-                        typeof trajectories[trajectory] === 'undefined' ?
-                            trajectories[trajectory] = 1 : trajectories[trajectory]++;
-                    }
-
-                }
-            }
-            // Sort the trajectories so we can show top 5. Array is needed for sorting.
-            let sortedTrajectories = [];
-            for (let trajectory in trajectories)
-                sortedTrajectories.push([trajectory.split(','), trajectories[trajectory]]);
-            sortedTrajectories.sort((a, b) => {return a[1] < b[1]});
-
-            console.log(sortedTrajectories);
-            return sortedTrajectories;
-        };
-        this.BFSTrajs = async function(places) {
+        this.generateTopTrajectories = async function(places) {
             // Generate graph
             let graph = {};
             // Generate origin for each place
@@ -705,6 +672,8 @@ data: {
                 graph[place[1].id] = {}
             }
             console.log(graph);
+            // Generate directed, weighted edges/routes for each place
+            // weight = times travelled from origin to destination
             for (let key of this.people.keys()) {
                 let person = this.people.get(key);
                 let origin = null;
@@ -713,62 +682,50 @@ data: {
                     origin = destination;
                     destination = place;
                     if (origin !== null) {
-                        // Generate directed edges/routes for each place
-                        //console.log(places.places.get(origin).id);
                         let originID = places.places.get(origin).id;
                         let destID = places.places.get(destination).id;
+
+                        // New edge? Initialize to weight 1. Otherwise add 1 to its weight.
                         typeof graph[originID][destID] === 'undefined' ? graph[originID][destID] = 1 : graph[originID][destID]++;
                     }
                 }
             }
             //console.log(graph);
             let paths = [];
+
             // Graph done, search it. Find length 4(?) paths from each starting point. Could probably also find
             // a length 5 path from a fake node with 0-weight connections to each node for the same result.
-            for (let source = 0, placesamt = places.places.size; source < placesamt; ++source) {
+
+            // Extremely heavy operation!! Something like O(|V|^n), where |V| is the number of places and n is length of
+            // path. This should really be done on a server and then just send the results to app users.
+            for (let source = 0, places_amount = places.places.size; source < places_amount; ++source) {
                 // Consider a proper queue instead of Array
                 let Q = [];
                 Q.push([[source], 0]);
 
-
-
-                // Must queue paths to know where to continue
+                // Must queue full paths to know where to continue
 
                 while (Q.length > 0) {
                     let path = Q.shift();
-
                     let path_nodes = path[0];
-
-
-                    if (path_nodes.length > 3) {// Stop search after and push to finalized paths
+                    if (path_nodes.length > 3) {  // Stop search when length is 4 and push to finalized paths
                         paths.push(path);
                         continue;
                     }
 
                     let path_length = path[1];
-                    //console.log("Nodes:", path_nodes, "Length:", path_nodes.length);
+                    let u = path_nodes[path_nodes.length - 1]; // Source u is the last node on current route
 
-                    let u = path_nodes[path_nodes.length - 1];
-
-
-                    // Go through adjacent nodes of u, add their distance to path
+                    // Go through adjacent nodes of u, add them as new paths
                     for (let v in graph[u]) {
-                        //console.log(v)
-                        //path.push(v); // Add found node to path
-
-                        let reitti = path_nodes.slice();
-                        reitti.push(Number(v));
-
-
-                        Q.push([reitti, path_length + graph[u][v]]); // Add found path and its length to queue
-                        //console.log(reitti);
+                        let new_path = path_nodes.slice(); // Must be copied, otherwise all v's keep adding to same path
+                        new_path.push(Number(v));
+                        Q.push([new_path, path_length + graph[u][v]]); // Add found new path and its length to queue
                     }
                 }
             }
-            //console.log(paths)
             paths.sort((a, b) => {return a[1] < b[1]});
-            console.log(paths)
-            return paths;
+            return paths.slice(0, 5); // Dump rest of the trajectories as we only want top 5.
         }
     },
 }
@@ -806,6 +763,7 @@ async function main() {
     const trajButton = document.getElementById('trajButton');
     trajButton.addEventListener('click', toggle_trajectories);
 
+    // checkboxes for selecting which top5 trajectories to show
     let trajCheckboxContainer = document.getElementById('CheckboxContainer');
     let trajCheckboxes = [];
     for (let i = 0; i < 5; i++) {
@@ -845,8 +803,7 @@ async function main() {
     const people = new myApp.data.people();
     await people.addPeople(map, peopledata);
     places.countCustomers(people);
-    let sortedTrajectories = await people.countTrajectories();
-    let top5trajs = await people.BFSTrajs(places);
+    let top5trajs = await people.generateTopTrajectories(places);
     const EARTH_RADIUS = 6.3781e6;
 
     // Called when filters or date range are changed
@@ -977,20 +934,19 @@ async function main() {
     }
     button3.addEventListener('click', toggleFilters);
 
-    let topTrajectories = [];
 
-    function trajCheckbox_clicked() {
+
+    let topTrajectories = [];
+    function trajCheckbox_clicked() { // set visibilities when clicking trajectories on and off
         for (let idxvalue_pair of trajCheckboxes.entries()) {
             let idx = idxvalue_pair[0], checkbox = idxvalue_pair[1];
             checkbox.checked ? topTrajectories[idx].setVisibility(true) : topTrajectories[idx].setVisibility(false);
         }
     }
 
-
-
     const toRadians = (angle) => { return angle/180*Math.PI };
 
-    // Equirectangular approximation, should be close enough for these small distances?
+    // Equirectangular approximation, should be close enough for these small distances
     function calculate_length(lats, lngs) {
         let length = 0;
         for (let i = 1; i < lats.length; i++)
@@ -1006,56 +962,8 @@ async function main() {
         }
         return length;
     }
-    /*async function toggle_trajectories() {
 
-        if (trajsVisible !== null) { // Toggle visibility if already initialized
-            for (let trajectory of topTrajectories)
-                trajectory.setVisibility(!trajsVisible);
-            trajsVisible = !trajsVisible;
-        }
-        else { // Generate on first press. Top 5 trajectories.
-            let colors = ['rgba(255, 0, 0, 0.7', 'rgba(200, 34, 34, 0.7',
-                'rgba(255, 165, 0, 0.7', 'rgba(200, 120, 0, 0.7', 'rgba(255, 215, 0, 0.7'];
-
-            for (let i = 0; i < 5; i++) {
-
-                let strip = new H.geo.Strip();
-                let origin = sortedTrajectories[i][0][0];
-                let destination = sortedTrajectories[i][0][1];
-                let timesTaken = sortedTrajectories[i][1];
-
-                let latOrigin = places.places.get(origin).coords.lat;
-                let lngOrigin = places.places.get(origin).coords.lng;
-                strip.pushLatLngAlt(latOrigin, lngOrigin);
-
-                let latDest = places.places.get(destination).coords.lat;
-                let lngDest = places.places.get(destination).coords.lng;
-                strip.pushLatLngAlt(latDest, lngDest);
-
-                let trajectory = new H.map.Polyline(strip, {
-                    style:
-                        {strokeColor: colors[i], lineWidth: 9-i},
-                    arrows: {width: 1}
-                });
-
-                // Add data for mouseover events to show
-                trajectory.setData({
-                    type: 'Trajectory',
-                    origin: origin,
-                    destination: destination,
-                    timesTaken: timesTaken
-                });
-
-                topTrajectories.push(trajectory); // store the polylines so they can be toggled on/off
-
-                map.map.addObject(trajectory);
-                trajsVisible = true;
-
-            }
-        }
-    }*/
-
-    let trajsActive = false;
+    let trajsActive = false; // Tracks whether trajectories are hidden or visible
 
     async function toggle_trajectories() {
 
@@ -1067,11 +975,10 @@ async function main() {
                 else
                     topTrajectories[i].setVisibility(trajCheckboxes[i].checked);
             }
-            //trajsActive? trajCheckboxContainer.style.display = 'block': trajCheckboxContainer.style.display = 'none';
             trajsActive? trajCheckboxContainer.style.visibility = 'visible': trajCheckboxContainer.style.visibility = 'hidden';
             trajsActive? trajButton.value = "Hide Top 5 Trajectories" : trajButton.value = "Show Top 5 Trajectories";
         }
-        else { // Generate on first press. Top 5 trajectories.
+        else { // Generate map objects on first press. Top 5 trajectories.
             let colors = ['rgba(255, 0, 0, 0.7', 'rgba(200, 34, 34, 0.7',
                 'rgba(255, 165, 0, 0.7', 'rgba(200, 120, 0, 0.7', 'rgba(255, 215, 0, 0.7'];
 
@@ -1119,7 +1026,6 @@ async function main() {
 
                 topTrajectories.push(trajectory); // store the polylines so they can be toggled on/off
                 map.map.addObject(trajectory);
-                //trajCheckboxContainer.style.display = 'block';
                 trajCheckboxContainer.style.visibility = 'visible';
 
 
@@ -1132,7 +1038,6 @@ async function main() {
     }
 
     // show info bubble on hover
-    //const format = d3.format('.2f');
     let hoveredObject;
     let infoBubble = new H.ui.InfoBubble({lat: 0, lng: 0}, {});
     infoBubble.addClass('info-bubble');
@@ -1237,7 +1142,7 @@ async function main() {
                 let lats = data.lats;
                 let lngs = data.lngs;
                 if (lats.length === 1) {
-                    console.log("No trajectory, only 1 location")
+                    console.log("No trajectory, only 1 location");
                     return;
                 }
 

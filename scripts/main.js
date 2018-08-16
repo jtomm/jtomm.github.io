@@ -798,7 +798,7 @@ async function main() {
     let heatMap; // heatMapProvider -object
 
     const places = new myApp.data.places();
-    places.addPlaces(map, placedata);
+    await places.addPlaces(map, placedata);
 
     const people = new myApp.data.people();
     await people.addPeople(map, peopledata);

@@ -1,0 +1,96 @@
+<html>
+<head>
+  <meta charset="utf-8"/>
+
+  <title> Heatmap Demo </title>
+  <link rel="stylesheet" href="scripts/jQRangeSlider-5.7.2/css/iThing-min.css" type="text/css" />
+  <meta name="viewport" content="initial-scale=1.0, width=device-width" />
+
+  <!-- Map platform -->
+  <script src="http://js.api.here.com/v3/3.0/mapsjs-core.js"
+          type="text/javascript" charset="utf-8"></script>
+  <script src="http://js.api.here.com/v3/3.0/mapsjs-service.js"
+          type="text/javascript" charset="utf-8"></script>
+
+  <!-- Map UI -->
+  <script src="http://js.api.here.com/v3/3.0/mapsjs-ui.js" 
+          type="text/javascript" charset="utf-8"></script>
+  <link rel="stylesheet" type="text/css" 
+        href="http://js.api.here.com/v3/3.0/mapsjs-ui.css" />
+
+  <!-- Map events, drag, zoom with whell etc -->
+  <script src="http://js.api.here.com/v3/3.0/mapsjs-mapevents.js" 
+          type="text/javascript" charset="utf-8"></script>
+
+  <!-- Data vsualisation -->
+  <script src="http://js.api.here.com/v3/3.0/mapsjs-data.js" 
+          type="text/javascript" charset="utf-8"></script>
+
+  <!-- Date range slider -->
+  <script src="scripts/jquery-3.3.1.min.js"></script>
+  <script src="scripts/jquery-ui-1.12.1.custom/jquery-ui.js"></script>
+  <script src="scripts/jQRangeSlider-5.7.2/jQDateRangeSlider-min.js"></script>
+
+  <!-- Date range picker -->
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+  <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css"/>
+
+  <!-- Date range picker -->
+  <script src="scripts/chosen/chosen.jquery.min.js"></script>
+  <link rel="stylesheet" type="text/css" href="scripts/chosen/chosen.min.css"/>
+  <!-- Style settings -->
+  <link rel="stylesheet" href=map_demo.css>
+
+  <!-- Charts -->
+  <script src="scripts/charts/Chart.bundle.min.js"></script>
+</head>
+
+<body>
+  <div id="headerContainer" class="HeaderContainer">
+    <h1 id="header1">Map demo</h1>
+  </div>
+
+  <div id="buttonContainer1" class="ButtonContainer1">
+    <input id="button1" type="button" class="Button1" name="button1" value="Heatmap OFF">
+  </div>
+  <div id="buttonContainer2" class="ButtonContainer1">
+    <input id="button2" type="button" class="Button2" name="button2" value="Charts">
+  </div>
+<div id="buttonContainer3" class="ButtonContainer1">
+    <input id="button3" type="button" class="Button3" name="button3" value="???">
+  </div>
+<div id="buttonContainer4" class="ButtonContainer1">
+    <input id="trajButton" type="button" class="trajButton" name="trajButton" value="Show Top 5 Trajectories">
+  </div>
+  <script src="scripts/main.js" type="module"> </script>
+<span id="CheckboxContainer" class="CheckboxContainer" style="display:block;visibility:hidden">
+Show top trajectories:<br />
+1. <input name=name type=checkbox id=trajCheck0 checked=checked>
+2. <input name=name type="checkbox" id="trajCheck1" checked=checked>
+3. <input name=name type="checkbox" id="trajCheck2" checked=checked>
+4. <input name=name type="checkbox" id="trajCheck3" checked=checked>
+5. <input name=name type="checkbox" id="trajCheck4" checked=checked>
+  </span>
+
+  <div class="Clearfix"></div>
+
+  <div id="mapContainer" class="MapContainer" style="display:block"></div>
+  <div id="chartContainer" class="MapContainer" style="display:none">
+    <canvas id="chart" class="Chart"></canvas>
+  </div>
+
+  <div id="sliderContainer" class="SliderContainer"></div>
+
+  <span class="RangePickerContainer">
+    <input id="datetimes" type="text" name="datetimes"/>
+  </span>
+  <span id="filterContainer" class="FilterContainer">
+    <select multiple="true" id=filterSelector ng-model="selectedFilter" 
+            ng-options="x for x in filters">
+    </select>
+  </span>
+
+
+</body>
+</html>

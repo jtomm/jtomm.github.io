@@ -1,0 +1,160 @@
+body
+{
+
+}
+
+h1
+{
+font-family: verdana;
+}
+
+p
+{
+
+}
+
+.Button1 
+{
+  background-color:  #922b21;
+  border: none;
+  color: white;
+  height: 50px;
+  width: 150px;
+  padding: 15px 32px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  cursor: pointer;
+}
+.Button2
+{
+  background-color:  #0489B1;
+  border: none;
+  color: white;
+  height: 50px;
+  width: 150px;
+  padding: 15px 32px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.Button3
+{
+  background-color:  #0489B1;
+  border: none;
+  color: white;
+  height: 50px;
+  width: 150px;
+  padding: 15px 32px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.trajButton
+{
+  background-color:  #CC7700;
+  border: none;
+  color: white;
+  height: 50px;
+  width: 250px;
+  padding: 15px 32px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.CheckboxContainer
+{
+  background-color: #FFFF;
+  width: 30%;
+  height: 70px;
+  float: right
+  display:inline-block;
+}
+
+.HeaderContainer
+{
+  background-color: #FFFF;
+  width: 30%;
+  height: 70px;
+  align-content: bottom;
+  display:inline-block;
+}
+
+.ButtonContainer1
+{
+  width: 20%;
+  height: 50px;
+  background-color: #FFFF; 
+  align-content: bottom;
+  display: inline-block;
+}
+
+.MapContainer
+{
+  width: 100%; 
+  height: 70%;
+}
+
+.Chart
+{
+  width: 100%;
+  height:70%;
+}
+
+.RangePickerContainer
+{
+  width: 30%;
+  margin: 0px 0px 20px 20px
+}
+
+.FilterContainer
+{
+  width: 50%;
+  margin: 0px 0px 20px 20px
+}
+
+.SliderContainer
+{
+  width: 95%;
+  margin: 0px 0px 20px 20px
+}
+
+.Vlearfix{
+    clear:both
+}
+
+.info-bubble {
+    opacity: 0.75;
+    padding: 0 5px;
+    pointer-events: none;
+}
+
+.info-bubble .info-bubble-title {
+    font-size: 15px;
+    margin-left: 2px;
+}
+
+.info-bubble .info-bubble-label {
+    font-size: 10px;
+    opacity: 0.7;
+    margin-left: 2px;
+}
+
+.info-bubble .H_ib_close {
+    display: none;
+}
+
+.info-bubble .H_ib_body {
+    padding: 0;
+}
+
